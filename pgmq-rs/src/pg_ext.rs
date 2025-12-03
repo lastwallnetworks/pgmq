@@ -6,7 +6,7 @@ use crate::util::{check_input, connect};
 use log::info;
 use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::Utc;
-use sqlx::{Column, Pool, Postgres, Row};
+use sqlx::{Pool, Postgres, Row};
 
 const DEFAULT_POLL_TIMEOUT_S: i32 = 5;
 const DEFAULT_POLL_INTERVAL_MS: i32 = 250;
@@ -193,11 +193,6 @@ impl PGMQueueExt {
         let queues = sqlx::query(r#"SELECT queue_name, is_partitioned, is_unlogged, created_at from pgmq.list_queues();"#)
             .fetch_all(executor)
             .await?;
-        for queue in &queues {
-            for row in queue.columns() {
-                println!("row name: {}", row.name());
-            }
-        }
         if queues.is_empty() {
             Ok(None)
         } else {
